@@ -84,7 +84,7 @@ It compares a candidate’s resume against a given job description, calculates a
 
 ### 1️⃣ Clone the repository
 ```bash
-git clone https://github.com/yourusername/ai-resume-jobmatch-flask-ollama.git
+git clone https://github.com/jawwadabbasi/ai-resume-jobmatch-flask-ollama.git
 cd ai-resume-jobmatch-flask-ollama
 ```
 
