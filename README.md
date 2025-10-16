@@ -80,31 +80,31 @@ It compares a candidate’s resume against a given job description, calculates a
 
 ---
 
-## 🧩 Setup Instructions
+## Setup Instructions
 
-### 1️⃣ Clone the repository
+### Clone the repository
 ```bash
 git clone https://github.com/jawwadabbasi/ai-resume-jobmatch-flask-ollama.git
 cd ai-resume-jobmatch-flask-ollama
 ```
 
-### 2️⃣ Create and activate a virtual environment
+### Create and activate a virtual environment
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3️⃣ Install dependencies
+### Install dependencies
 ```bash
 pip install -r src/requirements.txt
 ```
 
-### 4️⃣ Start Ollama and pull the model
+### Start Ollama and pull the model
 ```bash
 ollama pull llama3
 ```
 
-### 5️⃣ Run the Flask app
+### Run the Flask app
 ```bash
 python3 src/main.py
 ```
@@ -114,13 +114,13 @@ The API will be available at:
 
 ---
 
-## 📜 License
+## License
 
 This project is licensed under the **MIT License** — free for personal and commercial use.
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Built with ingenuity,**  
 by **Jawwad Abbasi** ([@jawwadabbasi](https://github.com/jawwadabbasi))  
