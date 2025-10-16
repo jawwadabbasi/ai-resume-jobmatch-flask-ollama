@@ -1,62 +1,39 @@
-import re
-import math
-from typing import Dict
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+from v1.ollama import Ollama
 
 class Analysis:
 
-    SKILL_HINTS = [
-        "python", "flask", "django", "fastapi", "mysql", "postgresql", "aws",
-        "docker", "kubernetes", "react", "node", "redis", "stripe", "twilio",
-        "devops", "ci/cd", "terraform", "gcp", "azure", "selenium", "api"
-    ]
+    model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 
-    EXP_HINTS = ["years", "experience", "built", "developed", "designed", "led"]
+    @staticmethod
+    def Run(resume_text, jd_text):
 
-    EDU_HINTS = ["bachelor", "master", "bs", "ms", "degree", "computer science", "b.sc", "bsc", "msc"]
+        embeddings = Analysis.model.encode([resume_text, jd_text])
+        sim = cosine_similarity([embeddings[0]], [embeddings[1]])[0][0]
+        similarity_score = round(sim * 100, 2)
 
-    def TfidfCosine(a: str, b: str) -> float:
+        length_penalty = min(len(resume_text) / len(jd_text), 1.0) * 100
+        relevance_score = round((similarity_score * 0.8 + length_penalty * 0.2), 2)
+
+        if relevance_score > 85:
+            verdict = "Excellent match — your resume strongly aligns with this role."
         
-        v = TfidfVectorizer(stop_words="english")
-        X = v.fit_transform([a, b])
-        sim = cosine_similarity(X[0:1], X[1:2])[0][0]
+        elif relevance_score > 65:
+            verdict = "Good match — some fine-tuning could make this even stronger."
         
-        return round(float(sim * 100), 2)
-
-    def BucketScore(text: str, hints) -> float:
+        elif relevance_score > 45:
+            verdict = "Partial match — the role may require skills not fully reflected."
         
-        text_l = text.lower()
-        hits = sum(1 for h in hints if h in text_l)
-        denom = max(len(hints), 1)
-        
-        return round((hits / denom) * 100, 2)
-
-    def Run(resume_text: str, jd_text: str) -> Dict:
-        
-        overall = Analysis.TfidfCosine(resume_text, jd_text)
-
-        skills_resume = Analysis.BucketScore(resume_text, Analysis.SKILL_HINTS)
-        skills_jd = Analysis.BucketScore(jd_text, Analysis.SKILL_HINTS)
-        skills = round((0.6 * skills_resume + 0.4 * skills_jd), 2)
-
-        exp = Analysis.BucketScore(resume_text, Analysis.EXP_HINTS)
-        edu = Analysis.BucketScore(resume_text, Analysis.EDU_HINTS)
-
-        overall_blend = round(0.5 * overall + 0.3 * skills + 0.2 * max(exp, edu), 2)
-
-        summary = (
-            f"Overall fit: {overall_blend}%. "
-            f"Skills alignment: {skills}%. "
-            f"Experience signal: {exp}%. "
-            f"Education signal: {edu}%."
-        )
+        else:
+            verdict = "Weak match — significant differences between resume and job."
 
         return {
-            "ScoreOverall": overall_blend,
-            "ScoreSkills": skills,
-            "ScoreExperience": exp,
-            "ScoreEducation": edu,
-            "Summary": summary
+            "ScoreOverall": relevance_score,
+            "Summary": verdict,
+            "ScoreSemanticSimilarity": similarity_score,
+            "ScoreLengthBalance": round(length_penalty, 2),
+            "Feedback": Ollama.GenerateFeedback(resume_text, jd_text) 
         }

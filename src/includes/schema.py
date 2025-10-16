@@ -18,22 +18,16 @@ class Schema:
                 id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 resume_text LONGTEXT NOT NULL,
                 jd_text LONGTEXT NOT NULL,
-                score_overall DECIMAL(5,2) DEFAULT 0.00,
-                score_skills DECIMAL(5,2) DEFAULT 0.00,
-                score_experience DECIMAL(5,2) DEFAULT 0.00,
-                score_education DECIMAL(5,2) DEFAULT 0.00,
-                summary LONGTEXT,
-                updated_at DATETIME NOT NULL,
-                created_at DATETIME NOT NULL
+                meta JSON NOT NULL,
+                date DATETIME NOT NULL
             ) ENGINE=INNODB;
 		"""
 
         if not Db.ExecuteQuery(query, None, True):
             return False
 
-        Db.ExecuteQuery("ALTER TABLE template ADD INDEX id (id);", None, True)
-        Db.ExecuteQuery("ALTER TABLE template ADD INDEX updated_at (updated_at);", None, True)
-        Db.ExecuteQuery("ALTER TABLE template ADD INDEX created_at (created_at);", None, True)
+        Db.ExecuteQuery("ALTER TABLE analyses ADD INDEX id (id);", None, True)
+        Db.ExecuteQuery("ALTER TABLE analyses ADD INDEX date (date);", None, True)
         #####################################################################################################
 
         return True

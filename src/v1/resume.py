@@ -1,4 +1,5 @@
 import inspect
+import json
 from werkzeug.datastructures import FileStorage
 
 from includes.common import Common
@@ -6,6 +7,7 @@ from includes.db import Db
 from services.logger import Logger
 from v1.parser import Parser
 from v1.analysis import Analysis
+from v1.handler import Handler
 from v1.wrapper import Wrapper
 
 class Resume:
@@ -62,23 +64,14 @@ class Resume:
 			INSERT INTO analyses
 			SET resume_text = %s,
 				jd_text = %s,
-				score_overall = %s,
-				score_skills = %s,
-				score_experience = %s,
-				score_education = %s,
-				summary = %s,
-				updated_at = NOW(),
-				created_at = NOW()
+				meta = %s,
+				date = NOW()
 		"""
 
 		inputs = (
 			resume_text,
             job_description,
-            metrics["ScoreOverall"],
-            metrics["ScoreSkills"],
-            metrics["ScoreExperience"],
-            metrics["ScoreEducation"],
-            metrics["Summary"]
+            json.dumps(Handler.JsonSafe(metrics))
 		)
 
 		result = Db.ExecuteQuery(query,inputs,True)
@@ -91,8 +84,6 @@ class Resume:
 
 		api_data['ApiHttpResponse'] = 201
 		api_data['ApiMessages'] += ['Request processed successfully']
-		api_data['ApiResult'] = [
-			{ **metrics }
-		]
+		api_data["ApiResult"] = [Handler.JsonSafe(metrics)]
 
 		return api_data
