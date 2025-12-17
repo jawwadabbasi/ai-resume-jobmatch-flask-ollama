@@ -124,4 +124,4 @@ This project is licensed under the **MIT License** — free for personal and com
 
 **Built with ingenuity,**  
 by **Jawwad Abbasi** ([@jawwadabbasi](https://github.com/jawwadabbasi))  
-Email: `jawwad@kodelle.com`
+Email: `jawwad@omnitryx.ca`
